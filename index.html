@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f6d9a9" />
+  <title>Our Date Adventure 💗</title>
+  <style>
+    :root{
+      --paper:#f7e7bf;
+      --paper-2:#efd39a;
+      --ink:#3b2b28;
+      --pink:#ff6f91;
+      --pink-2:#ff9db4;
+      --blue:#8dd8e8;
+      --blue-dark:#58b7c9;
+      --green:#9acb75;
+      --green-2:#c6df8a;
+      --gold:#f8c557;
+      --cream:#fff9e9;
+      --shadow:0 16px 40px rgba(77,49,30,.18);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-rounded, "Avenir Next", "Segoe UI", system-ui, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,.55), transparent 24%),
+        repeating-linear-gradient(0deg, rgba(96,66,40,.035) 0 1px, transparent 1px 6px),
+        var(--paper);
+      overflow-x:hidden;
+    }
+
+    button{font:inherit}
+
+    .shell{
+      width:min(1180px, calc(100% - 28px));
+      margin:0 auto;
+      padding:22px 0 44px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:16px;
+    }
+
+    .title-wrap h1{
+      margin:0;
+      font-size:clamp(28px, 5vw, 56px);
+      line-height:.98;
+      letter-spacing:-1.5px;
+      text-shadow:2px 2px 0 rgba(255,255,255,.55);
+    }
+
+    .title-wrap p{
+      margin:9px 0 0;
+      opacity:.78;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .progress-card{
+      min-width:210px;
+      background:rgba(255,249,233,.82);
+      border:2px solid rgba(59,43,40,.16);
+      border-radius:18px;
+      padding:12px 14px;
+      box-shadow:0 8px 20px rgba(77,49,30,.1);
+      backdrop-filter: blur(6px);
+    }
+
+    .progress-line{
+      display:flex;
+      justify-content:space-between;
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .bar{
+      height:12px;
+      background:#ead9b6;
+      border:2px solid rgba(59,43,40,.12);
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .bar > div{
+      width:0;
+      height:100%;
+      background:linear-gradient(90deg, var(--pink), #ffb5c5);
+      border-radius:999px;
+      transition:width .45s ease;
+    }
+
+    .board{
+      position:relative;
+      min-height:740px;
+      border:4px solid var(--ink);
+      border-radius:28px 20px 34px 24px;
+      background:var(--blue);
+      box-shadow:var(--shadow), inset 0 0 0 8px rgba(255,255,255,.22);
+      overflow:hidden;
+      transform:rotate(-.25deg);
+      isolation:isolate;
+    }
+
+    .board:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 30px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 30px);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wave{
+      position:absolute;
+      height:10px;
+      width:58px;
+      border-top:3px solid rgba(255,255,255,.75);
+      border-radius:50%;
+      opacity:.75;
+      z-index:1;
+    }
+
+    .island{
+      position:absolute;
+      border:4px solid var(--ink);
+      background:var(--green-2);
+      box-shadow:inset -10px -12px 0 rgba(83,142,69,.18), 0 6px 0 rgba(59,43,40,.06);
+      z-index:1;
+    }
+
+    .i1{left:-4%; top:58%; width:34%; height:35%; border-radius:46% 58% 38% 62% / 54% 45% 60% 40%; transform:rotate(6deg)}
+    .i2{left:16%; top:13%; width:35%; height:31%; border-radius:55% 45% 60% 40% / 45% 55% 42% 58%; transform:rotate(-5deg)}
+    .i3{left:53%; top:42%; width:29%; height:27%; border-radius:43% 57% 48% 52% / 60% 44% 56% 40%; transform:rotate(7deg)}
+    .i4{right:-5%; top:5%; width:29%; height:29%; border-radius:58% 42% 60% 40% / 49% 58% 42% 51%; transform:rotate(-7deg)}
+    .i5{right:7%; bottom:3%; width:33%; height:26%; border-radius:52% 48% 40% 60% / 44% 59% 41% 56%; transform:rotate(4deg)}
+
+    .sand{
+      position:absolute;
+      inset:9px;
+      border:8px solid rgba(242,211,143,.72);
+      border-radius:inherit;
+      pointer-events:none;
+    }
+
+    .decor{
+      position:absolute;
+      z-index:2;
+      filter:drop-shadow(0 4px 0 rgba(59,43,40,.08));
+      user-select:none;
+      pointer-events:none;
+    }
+
+    .cloud{font-size:44px; opacity:.88}
+    .tree{font-size:44px}
+    .mountain{font-size:72px}
+    .boat{font-size:54px}
+    .whale{font-size:66px}
+    .chest{font-size:68px}
+
+    #routeSvg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:3;
+      pointer-events:none;
+    }
+
+    #routePath{
+      fill:none;
+      stroke:var(--ink);
+      stroke-width:5;
+      stroke-linecap:round;
+      stroke-dasharray:2 15;
+      opacity:.9;
+    }
+
+    .stop{
+      position:absolute;
+      left:var(--x);
+      top:var(--y);
+      transform:translate(-50%, -50%);
+      z-index:5;
+      border:0;
+      background:transparent;
+      cursor:pointer;
+      text-align:center;
+      padding:0;
+      transition:transform .2s ease, filter .2s ease;
+    }
+
+    .stop:hover{transform:translate(-50%,-50%) scale(1.08); filter:brightness(1.03)}
+    .stop:focus-visible{outline:4px solid white; outline-offset:6px; border-radius:999px}
+
+    .pin{
+      width:74px;
+      height:74px;
+      position:relative;
+      border-radius:50% 50% 50% 12%;
+      transform:rotate(-45deg);
+      background:linear-gradient(145deg,var(--pink-2),var(--pink));
+      border:4px solid var(--ink);
+      box-shadow:0 7px 0 rgba(59,43,40,.12);
+      display:grid;
+      place-items:center;
+    }
+
+    .pin-inner{
+      width:52px;
+      height:52px;
+      transform:rotate(45deg);
+      background:var(--cream);
+      border:3px solid var(--ink);
+      border-radius:50%;
+      overflow:hidden;
+      display:flex;
+      position:relative;
+    }
+
+    .face{
+      width:50%;
+      height:100%;
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      font-weight:1000;
+      color:white;
+      text-shadow:0 2px 0 rgba(0,0,0,.15);
+    }
+
+    .face.you{background:#5599ff}
+    .face.partner{background:#ff8eb1}
+    .face img{width:100%;height:100%;object-fit:cover}
+
+    .badge{
+      position:absolute;
+      right:-7px;
+      top:-9px;
+      width:29px;
+      height:29px;
+      border-radius:50%;
+      background:var(--gold);
+      border:3px solid var(--ink);
+      display:grid;
+      place-items:center;
+      font-size:13px;
+      font-weight:1000;
+      transform:rotate(45deg);
+      z-index:3;
+    }
+
+    .stop-label{
+      margin-top:10px;
+      display:inline-block;
+      background:rgba(255,249,233,.94);
+      border:3px solid var(--ink);
+      border-radius:12px;
+      padding:6px 9px;
+      font-weight:1000;
+      font-size:12px;
+      box-shadow:0 5px 0 rgba(59,43,40,.1);
+      white-space:nowrap;
+    }
+
+    .stop.completed .pin{background:linear-gradient(145deg,#96df96,#57bd72)}
+    .stop.completed .badge{background:#88e5a0}
+    .stop.completed .badge::after{content:"✓"}
+    .stop.completed .badge span{display:none}
+
+    .legend{
+      position:absolute;
+      left:18px;
+      top:18px;
+      z-index:7;
+      width:min(290px, calc(100% - 36px));
+      background:rgba(255,249,233,.92);
+      border:3px solid var(--ink);
+      border-radius:16px;
+      padding:13px 14px;
+      transform:rotate(-1deg);
+      box-shadow:0 8px 0 rgba(59,43,40,.1);
+    }
+
+    .legend strong{font-size:14px}
+    .legend p{margin:4px 0 0; font-size:12px; font-weight:700; line-height:1.35; opacity:.74}
+
+    .compass{
+      position:absolute;
+      right:24px;
+      bottom:20px;
+      z-index:2;
+      width:76px;
+      height:76px;
+      border:4px solid var(--ink);
+      border-radius:50%;
+      background:rgba(255,249,233,.82);
+      display:grid;
+      place-items:center;
+      font-weight:1000;
+      transform:rotate(8deg);
+    }
+    .compass:before{content:"N"; position:absolute; top:2px}
+    .compass:after{content:"➤"; font-size:36px; transform:rotate(-90deg)}
+
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      z-index:50;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(43,31,27,.45);
+      backdrop-filter:blur(6px);
+    }
+
+    .modal-backdrop.open{display:flex}
+
+    .modal{
+      width:min(460px,100%);
+      background:var(--cream);
+      border:4px solid var(--ink);
+      border-radius:24px 18px 28px 20px;
+      box-shadow:0 22px 0 rgba(59,43,40,.17), 0 28px 70px rgba(0,0,0,.24);
+      padding:22px;
+      transform:rotate(-.5deg);
+      animation:pop .22s ease-out;
+    }
+
+    @keyframes pop{from{transform:scale(.88) rotate(-2deg); opacity:0}to{transform:scale(1) rotate(-.5deg);opacity:1}}
+
+    .modal-top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+    .modal .eyebrow{font-weight:1000; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#b24f67}
+    .modal h2{font-size:30px; margin:3px 0 6px; line-height:1.05}
+    .modal .time{font-weight:1000; font-size:15px}
+    .modal .note{font-size:16px; line-height:1.55; font-weight:700; margin:18px 0; padding:14px; background:#fff1c7; border:2px dashed rgba(59,43,40,.35); border-radius:14px}
+
+    .close-btn{
+      width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:white;cursor:pointer;font-weight:1000;font-size:18px;box-shadow:0 4px 0 rgba(59,43,40,.1)
+    }
+
+    .actions{display:flex; gap:10px; flex-wrap:wrap}
+    .action{
+      border:3px solid var(--ink);
+      border-radius:999px;
+      padding:10px 15px;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 5px 0 rgba(59,43,40,.12);
+    }
+    .action.primary{background:var(--pink);color:white}
+    .action.secondary{background:white;color:var(--ink)}
+
+    .footer-note{
+      margin:14px 4px 0;
+      font-size:12px;
+      font-weight:700;
+      opacity:.65;
+      text-align:center;
+    }
+
+    @media (max-width: 760px){
+      .shell{width:min(100% - 14px, 1180px); padding-top:12px}
+      .topbar{align-items:stretch; flex-direction:column}
+      .progress-card{width:100%}
+      .board{min-height:760px;border-width:3px}
+      .legend{left:12px;top:12px}
+      .pin{width:62px;height:62px}
+      .pin-inner{width:44px;height:44px}
+      .stop-label{font-size:11px;padding:5px 7px}
+      .cloud{font-size:36px}.tree{font-size:36px}.mountain{font-size:58px}.boat{font-size:45px}.whale{font-size:52px}.chest{font-size:58px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <div class="title-wrap">
+        <h1>🗺️ Our Date Adventure</h1>
+        <p>Một ngày hẹn hò, 5 checkpoint, vô hạn side quest.</p>
+      </div>
+      <div class="progress-card">
+        <div class="progress-line">
+          <span>ADVENTURE PROGRESS</span>
+          <span id="progressText">0 / 5</span>
+        </div>
+        <div class="bar"><div id="progressBar"></div></div>
+      </div>
+    </div>
+
+    <section class="board" id="board" aria-label="Bản đồ buổi hẹn hò">
+      <div class="legend">
+        <strong>💌 Mission of the day</strong>
+        <p>Đi qua từng checkpoint. Click vào icon hai đứa để xem nhiệm vụ, rồi đánh dấu Completed.</p>
+      </div>
+
+      <div class="island i1"><div class="sand"></div></div>
+      <div class="island i2"><div class="sand"></div></div>
+      <div class="island i3"><div class="sand"></div></div>
+      <div class="island i4"><div class="sand"></div></div>
+      <div class="island i5"><div class="sand"></div></div>
+
+      <span class="decor cloud" style="left:46%;top:7%">☁️</span>
+      <span class="decor cloud" style="left:72%;top:31%">☁️</span>
+      <span class="decor cloud" style="left:8%;top:39%">☁️</span>
+      <span class="decor mountain" style="left:28%;top:18%">🏔️</span>
+      <span class="decor tree" style="left:9%;top:71%">🌴</span>
+      <span class="decor tree" style="left:20%;top:78%">🌴</span>
+      <span class="decor tree" style="left:63%;top:53%">🌲</span>
+      <span class="decor tree" style="left:85%;top:14%">🌴</span>
+      <span class="decor whale" style="left:58%;top:16%">🐳</span>
+      <span class="decor boat" style="left:3%;top:53%">⛵</span>
+      <span class="decor chest" style="right:11%;bottom:7%">🧰</span>
+
+      <span class="wave" style="left:7%;top:31%;transform:rotate(-8deg)"></span>
+      <span class="wave" style="left:52%;top:33%;transform:rotate(7deg)"></span>
+      <span class="wave" style="left:42%;top:66%;transform:rotate(-3deg)"></span>
+      <span class="wave" style="left:83%;top:52%;transform:rotate(8deg)"></span>
+
+      <svg id="routeSvg" viewBox="0 0 1000 740" preserveAspectRatio="none" aria-hidden="true">
+        <path id="routePath" d="" />
+      </svg>
+
+      <div class="compass" aria-hidden="true"></div>
+    </section>
+
+    <p class="footer-note">Tip: sửa mảng <b>stops</b> trong file này để đổi tên, giờ, note và vị trí checkpoint.</p>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-top">
+        <div>
+          <div class="eyebrow" id="modalEyebrow">CHECKPOINT 1</div>
+          <h2 id="modalTitle">Coffee Island ☕</h2>
+          <div class="time" id="modalTime">09:30</div>
+        </div>
+        <button class="close-btn" id="closeModal" aria-label="Đóng">×</button>
+      </div>
+      <div class="note" id="modalNote"></div>
+      <div class="actions">
+        <button class="action primary" id="completeBtn">✓ Completed</button>
+        <button class="action secondary" id="nextBtn">Next checkpoint →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================
+    // CUSTOMIZE YOUR DATE HERE 💗
+    // x / y là % vị trí trên tấm bản đồ.
+    // Nếu có ảnh thật, thay initials bằng image: "images/me.jpg" / "images/her.jpg".
+    // =============================
+    const couple = {
+      you: { initials: "ME", image: "" },
+      partner: { initials: "U", image: "" }
+    };
+
+    const stops = [
+      {
+        x: 16, y: 72,
+        time: "09:30",
+        title: "Coffee Island ☕",
+        note: "Mission: gọi đồ trong vòng 10 phút. Bonus point nếu không ai nói câu ‘gì cũng được’."
+      },
+      {
+        x: 33, y: 33,
+        time: "11:00",
+        title: "Art Mountain 🎨",
+        note: "Side quest: vẽ/chụp cho nhau một tấm thật xấu nhưng vẫn phải khen đẹp."
+      },
+      {
+        x: 61, y: 55,
+        time: "13:00",
+        title: "Food Kingdom 🍜",
+        note: "Boss battle: quyết định ăn gì trước khi cả hai cùng hết pin xã hội."
+      },
+      {
+        x: 82, y: 23,
+        time: "16:30",
+        title: "Secret Garden 🌿",
+        note: "Mission: đi bộ chậm 20 phút, cấm nhìn điện thoại, được phép mua đồ ăn vặt."
+      },
+      {
+        x: 78, y: 78,
+        time: "18:10",
+        title: "Sunset Treasure 🌅",
+        note: "Final checkpoint: chụp một tấm ảnh để sau này nhìn lại và nhớ rằng hôm nay đã sống sót cùng nhau."
+      }
+    ];
+
+    const board = document.getElementById("board");
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalEyebrow = document.getElementById("modalEyebrow");
+    const modalTime = document.getElementById("modalTime");
+    const modalNote = document.getElementById("modalNote");
+    const completeBtn = document.getElementById("completeBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const closeModal = document.getElementById("closeModal");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+
+    let activeIndex = 0;
+    const completed = new Set(JSON.parse(localStorage.getItem("dateMapCompleted") || "[]"));
+
+    function faceHTML(person, className){
+      if(person.image){
+        return `<div class="face ${className}"><img src="${person.image}" alt=""></div>`;
+      }
+      return `<div class="face ${className}">${person.initials}</div>`;
+    }
+
+    function createStops(){
+      stops.forEach((stop, index) => {
+        const btn = document.createElement("button");
+        btn.className = "stop" + (completed.has(index) ? " completed" : "");
+        btn.style.setProperty("--x", stop.x + "%");
+        btn.style.setProperty("--y", stop.y + "%");
+        btn.setAttribute("aria-label", `Checkpoint ${index + 1}: ${stop.title}`);
+        btn.dataset.index = index;
+        btn.innerHTML = `
+          <div class="pin">
+            <div class="pin-inner">
+              ${faceHTML(couple.you, "you")}
+              ${faceHTML(couple.partner, "partner")}
+            </div>
+            <div class="badge"><span>${index + 1}</span></div>
+          </div>
+          <div class="stop-label">${stop.time} · ${stop.title.replace(/\s[^\s]+$/,'')}</div>
+        `;
+        btn.addEventListener("click", () => openStop(index));
+        board.appendChild(btn);
+      });
+      updateProgress();
+      drawRoute();
+    }
+
+    function openStop(index){
+      activeIndex = index;
+      const stop = stops[index];
+      modalEyebrow.textContent = `CHECKPOINT ${index + 1} / ${stops.length}`;
+      modalTitle.textContent = stop.title;
+      modalTime.textContent = stop.time;
+      modalNote.textContent = stop.note;
+      completeBtn.textContent = completed.has(index) ? "↩ Mark incomplete" : "✓ Completed";
+      nextBtn.style.display = index === stops.length - 1 ? "none" : "inline-block";
+      modalBackdrop.classList.add("open");
+    }
+
+    function close(){ modalBackdrop.classList.remove("open"); }
+
+    closeModal.addEventListener("click", close);
+    modalBackdrop.addEventListener("click", (e) => { if(e.target === modalBackdrop) close(); });
+    document.addEventListener("keydown", (e) => { if(e.key === "Escape") close(); });
+
+    completeBtn.addEventListener("click", () => {
+      if(completed.has(activeIndex)) completed.delete(activeIndex);
+      else completed.add(activeIndex);
+      localStorage.setItem("dateMapCompleted", JSON.stringify([...completed]));
+      document.querySelectorAll(".stop")[activeIndex].classList.toggle("completed", completed.has(activeIndex));
+      completeBtn.textContent = completed.has(activeIndex) ? "↩ Mark incomplete" : "✓ Completed";
+      updateProgress();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if(activeIndex < stops.length - 1) openStop(activeIndex + 1);
+    });
+
+    function updateProgress(){
+      progressText.textContent = `${completed.size} / ${stops.length}`;
+      progressBar.style.width = `${(completed.size / stops.length) * 100}%`;
+    }
+
+    function drawRoute(){
+      const w = 1000, h = 740;
+      const pts = stops.map(s => [s.x / 100 * w, s.y / 100 * h]);
+      if(!pts.length) return;
+      let d = `M ${pts[0][0]} ${pts[0][1]}`;
+      for(let i=1; i<pts.length; i++){
+        const [x0,y0] = pts[i-1];
+        const [x1,y1] = pts[i];
+        const mx = (x0+x1)/2;
+        const bend = i % 2 === 0 ? 38 : -38;
+        const my = (y0+y1)/2 + bend;
+        d += ` Q ${mx} ${my}, ${x1} ${y1}`;
+      }
+      document.getElementById("routePath").setAttribute("d", d);
+    }
+
+    createStops();
+  </script>
+</body>
+</html>
