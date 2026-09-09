@@ -826,6 +826,63 @@
       100%{opacity:0;transform:translate(var(--dx,80px),-28px) scale(.82) rotate(8deg)}
     }
 
+
+
+    /* Extra object burst: đồ vật bật/bay/nhảy quanh avatar khi đáp xuống */
+    .fx-object-pop{
+      font-size:var(--size,30px);
+      transform-origin:50% 70%;
+      animation:objectPopAround var(--dur,2.45s) cubic-bezier(.18,.72,.22,1) var(--delay,0s) forwards;
+      filter:drop-shadow(0 7px 10px rgba(60,45,52,.20));
+    }
+
+    @keyframes objectPopAround{
+      0%{
+        opacity:0;
+        transform:translate(0,8px) scale(.18) rotate(var(--r0,-18deg));
+      }
+      14%{
+        opacity:1;
+        transform:translate(var(--mx,0px), var(--my,-30px)) scale(1.18) rotate(var(--r1,8deg));
+      }
+      36%{
+        opacity:1;
+        transform:translate(var(--dx,0px), var(--dy,-70px)) scale(1) rotate(var(--r2,-5deg));
+      }
+      52%{
+        transform:translate(var(--dx,0px), calc(var(--dy,-70px) - var(--jump,28px))) scale(1.08) rotate(var(--r3,8deg));
+      }
+      66%{
+        transform:translate(var(--dx,0px), var(--dy,-70px)) scale(.98) rotate(var(--r4,-3deg));
+      }
+      78%{
+        opacity:1;
+        transform:translate(var(--dx2,0px), calc(var(--dy2,-78px) - var(--jump2,16px))) scale(1.04) rotate(var(--r5,5deg));
+      }
+      100%{
+        opacity:0;
+        transform:translate(var(--dx2,0px), var(--dy2,-78px)) scale(.62) rotate(var(--r6,18deg));
+      }
+    }
+
+    .arrival-ring{
+      position:absolute;
+      left:0;
+      top:0;
+      width:34px;
+      height:34px;
+      border:3px solid rgba(255,255,255,.88);
+      border-radius:50%;
+      transform:translate(-50%,-50%) scale(.35);
+      box-shadow:0 0 0 6px rgba(232,143,161,.16), 0 0 24px rgba(255,255,255,.75);
+      animation:arrivalRing 1.15s ease-out forwards;
+    }
+
+    @keyframes arrivalRing{
+      0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}
+      18%{opacity:1}
+      100%{opacity:0;transform:translate(-50%,-50%) scale(5.2)}
+    }
     .fx-star-pop{
       font-size:var(--size,20px);
       animation:starPop var(--dur,1.65s) ease-out var(--delay,0s) forwards;
@@ -898,7 +955,7 @@
     <section class="board" id="board" aria-label="Bản đồ hành trình vòng quanh thế giới">
       <div class="legend">
         <strong>💌 Mission of the journey</strong>
-        <p>Complete rồi đóng popup để bay sang điểm kế tiếp.</p>
+        <p>Tất cả checkpoint đều màu xám. Chỉ điểm avatar đang đứng mới sáng lên; Complete rồi đóng popup để bay sang điểm kế tiếp.</p>
       </div>
 
       <!-- Vector world map: Natural Earth public-domain data, không có text thừa, nét ở mọi độ phân giải -->
@@ -1621,8 +1678,73 @@
       cleanupDestinationOrigin(origin,3900);
     }
 
+
+
+    // Đồ vật đặc trưng bật/bay/nhảy quanh avatar khi vừa đáp xuống.
+    // Chạy song song với animation riêng của từng destination bên dưới.
+    const destinationObjectSets = [
+      ["☕","🥢","🛵","🪭","📸","🍜","🎒","💌"],
+      ["🥐","☕","📸","🎀","🗼","💌","🕯️","👜"],
+      ["🧣","☕","📸","🏕️","🍁","🎒","🥾","🧭"],
+      ["🧤","🧣","☕","🛷","📸","🕯️","🎒","🧭"],
+      ["🍣","🍜","🍡","🎮","📸","🎏","🛍️","🍵"],
+      ["🕶️","📸","🐚","🥥","🧭","🎒","⛱️","☀️"]
+    ];
+
+    function playObjectBurst(index){
+      const origin = destinationFxOrigin(index);
+      const ring = document.createElement("span");
+      ring.className = "arrival-ring";
+      origin.appendChild(ring);
+
+      const symbols = destinationObjectSets[index] || ["✨","💗","📸","🎒"];
+      const count = symbols.length;
+      symbols.forEach((symbol, i) => {
+        // Bố trí thành vòng cung quanh avatar, ưu tiên phần trên để không che label.
+        const angle = (-160 + (320 / Math.max(1, count - 1)) * i) * Math.PI / 180;
+        const radius = 82 + (i % 3) * 22;
+        const dx = Math.cos(angle) * radius;
+        const dy = Math.sin(angle) * radius - 28;
+        const drift = (i % 2 ? 1 : -1) * (8 + (i % 3) * 5);
+        addDestinationFxItem(origin, "fx-object-pop", symbol, {
+          dx:`${dx.toFixed(0)}px`,
+          dy:`${dy.toFixed(0)}px`,
+          mx:`${(dx*.42).toFixed(0)}px`,
+          my:`${(dy*.42).toFixed(0)}px`,
+          dx2:`${(dx + drift).toFixed(0)}px`,
+          dy2:`${(dy - 6 - (i%2)*7).toFixed(0)}px`,
+          jump:`${22 + (i%4)*6}px`,
+          jump2:`${12 + (i%3)*4}px`,
+          r0:`${-22 + i*5}deg`,
+          r1:`${10 - i*2}deg`,
+          r2:`${-7 + i}deg`,
+          r3:`${8 - i}deg`,
+          r4:`${-4 + i*.6}deg`,
+          r5:`${5 - i*.5}deg`,
+          r6:`${(i%2 ? 1 : -1) * (18 + i*3)}deg`,
+          dur:`${2.15 + (i%3)*.22}s`,
+          delay:`${.05 + i*.075}s`,
+          size:`${24 + (i%4)*3}px`
+        });
+      });
+
+      // Thêm 4 sparkle nhỏ để cú đáp có cảm giác "pop" rõ hơn.
+      for(let i=0;i<4;i++){
+        const angle = Math.PI*2*(i/4) + Math.PI/4;
+        const radius = 55 + i*8;
+        addDestinationFxItem(origin,"fx-star-pop", i%2 ? "✨" : "✦", {
+          dx:`${(Math.cos(angle)*radius).toFixed(0)}px`,
+          dy:`${(Math.sin(angle)*radius-24).toFixed(0)}px`,
+          mx:`${(Math.cos(angle)*radius*.45).toFixed(0)}px`,
+          my:`${((Math.sin(angle)*radius-24)*.45).toFixed(0)}px`,
+          delay:`${i*.06}s`, dur:"1.35s", size:`${17+i*2}px`
+        });
+      }
+      cleanupDestinationOrigin(origin,3600);
+    }
     function playDestinationAnimation(index){
       if(index < 0 || index >= stops.length || !destinationFxLayer) return;
+      playObjectBurst(index);
       switch(index){
         case 0: playHanoiAnimation(index); break;
         case 1:
