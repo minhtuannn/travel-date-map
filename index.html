@@ -108,6 +108,36 @@
       transition:width .45s ease;
     }
 
+    .progress-actions{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:10px;
+    }
+
+    .restart-btn{
+      border:1px solid rgba(79,69,70,.11);
+      border-radius:999px;
+      padding:7px 11px;
+      background:rgba(255,255,255,.78);
+      color:#817376;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.15px;
+      cursor:pointer;
+      box-shadow:0 4px 12px rgba(86,67,67,.07);
+      transition:transform .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+
+    .restart-btn:hover{
+      transform:translateY(-1px);
+      background:#fff;
+      color:#c66f83;
+      box-shadow:0 6px 16px rgba(86,67,67,.10);
+    }
+
+    .restart-btn:active{transform:translateY(0) scale(.98)}
+    .restart-btn:focus-visible{outline:3px solid rgba(232,143,161,.28);outline-offset:2px}
+
     .board{
       position:relative;
       width:min(1650px, 100%);
@@ -704,6 +734,9 @@
           <span id="progressText">0 / 6</span>
         </div>
         <div class="bar"><div id="progressBar"></div></div>
+        <div class="progress-actions">
+          <button class="restart-btn" id="restartBtn" type="button" title="Bắt đầu lại từ Hanoi">↻ Restart journey</button>
+        </div>
       </div>
     </div>
 
@@ -1023,6 +1056,7 @@
     const closeModalBtn = document.getElementById("closeModal");
     const progressText = document.getElementById("progressText");
     const progressBar = document.getElementById("progressBar");
+    const restartBtn = document.getElementById("restartBtn");
     const celebration = document.getElementById("celebration");
     const celebrationClose = document.getElementById("celebrationClose");
     const fxCanvas = document.getElementById("fxCanvas");
@@ -1198,6 +1232,16 @@
     celebrationClose.addEventListener("click", () => celebration.classList.remove("open"));
     celebration.addEventListener("click", (e) => {
       if(e.target === celebration) celebration.classList.remove("open");
+    });
+
+    restartBtn.addEventListener("click", () => {
+      const ok = window.confirm("Restart hành trình từ Hanoi? Toàn bộ progress hiện tại sẽ được xoá.");
+      if(!ok) return;
+
+      clearTimeout(window.__finalCelebrationTimer);
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(TRAVEL_KEY);
+      window.location.reload();
     });
 
     function updateProgress(){
