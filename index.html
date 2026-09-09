@@ -696,9 +696,9 @@
     .destination-fx-layer{
       position:absolute;
       inset:0;
-      z-index:11;
+      z-index:24;
       pointer-events:none;
-      overflow:hidden;
+      overflow:visible;
     }
 
     .destination-fx-origin{
@@ -707,7 +707,9 @@
       top:var(--fx-y);
       width:0;
       height:0;
+      z-index:1;
       pointer-events:none;
+      overflow:visible;
     }
 
     .destination-fx-item{
@@ -830,10 +832,11 @@
 
     /* Extra object burst: đồ vật bật/bay/nhảy quanh avatar khi đáp xuống */
     .fx-object-pop{
-      font-size:var(--size,30px);
+      font-size:var(--size,38px);
       transform-origin:50% 70%;
-      animation:objectPopAround var(--dur,2.45s) cubic-bezier(.18,.72,.22,1) var(--delay,0s) forwards;
-      filter:drop-shadow(0 7px 10px rgba(60,45,52,.20));
+      opacity:0;
+      filter:drop-shadow(0 8px 12px rgba(60,45,52,.26));
+      will-change:transform,opacity;
     }
 
     @keyframes objectPopAround{
@@ -869,13 +872,45 @@
       position:absolute;
       left:0;
       top:0;
+      width:44px;
+      height:44px;
+      border:4px solid rgba(255,255,255,.96);
+      border-radius:50%;
+      transform:translate(-50%,-50%) scale(.25);
+      box-shadow:0 0 0 8px rgba(232,143,161,.20), 0 0 34px rgba(255,255,255,.92);
+      animation:arrivalRing 1.25s ease-out forwards;
+    }
+
+    .arrival-ring.second{
       width:34px;
       height:34px;
-      border:3px solid rgba(255,255,255,.88);
-      border-radius:50%;
-      transform:translate(-50%,-50%) scale(.35);
-      box-shadow:0 0 0 6px rgba(232,143,161,.16), 0 0 24px rgba(255,255,255,.75);
-      animation:arrivalRing 1.15s ease-out forwards;
+      border-color:rgba(246,192,111,.92);
+      animation-delay:.16s;
+    }
+
+    .arrival-badge{
+      position:absolute;
+      left:0;
+      top:0;
+      transform:translate(-50%,-112px) scale(.7);
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.96);
+      color:#6d5d62;
+      font-size:11px;
+      font-weight:1000;
+      letter-spacing:.8px;
+      white-space:nowrap;
+      box-shadow:0 8px 22px rgba(66,53,58,.15);
+      opacity:0;
+      animation:arrivalBadgePop 2.2s cubic-bezier(.2,.8,.2,1) forwards;
+    }
+
+    @keyframes arrivalBadgePop{
+      0%{opacity:0;transform:translate(-50%,-82px) scale(.65)}
+      18%{opacity:1;transform:translate(-50%,-120px) scale(1.08)}
+      45%,72%{opacity:1;transform:translate(-50%,-112px) scale(1)}
+      100%{opacity:0;transform:translate(-50%,-128px) scale(.92)}
     }
 
     @keyframes arrivalRing{
@@ -895,7 +930,7 @@
     }
 
     @media (prefers-reduced-motion: reduce){
-      .destination-fx-layer{display:none}
+      .fx-object-pop{filter:drop-shadow(0 5px 8px rgba(60,45,52,.18))}
     }
 
 
@@ -1693,54 +1728,94 @@
 
     function playObjectBurst(index){
       const origin = destinationFxOrigin(index);
-      const ring = document.createElement("span");
-      ring.className = "arrival-ring";
-      origin.appendChild(ring);
 
-      const symbols = destinationObjectSets[index] || ["✨","💗","📸","🎒"];
+      // Hai vòng sáng bung ra ngay lúc avatar chạm đất.
+      const ring1 = document.createElement("span");
+      ring1.className = "arrival-ring";
+      origin.appendChild(ring1);
+      const ring2 = document.createElement("span");
+      ring2.className = "arrival-ring second";
+      origin.appendChild(ring2);
+
+      // Nhãn ARRIVED để người xem nhận ra rõ thời điểm hiệu ứng bắt đầu.
+      const badge = document.createElement("span");
+      badge.className = "arrival-badge";
+      badge.textContent = `✦ ARRIVED · ${shortTitle(stops[index].title).toUpperCase()} ✦`;
+      origin.appendChild(badge);
+
+      const baseSymbols = destinationObjectSets[index] || ["✨","💗","📸","🎒"];
+      // 12 vật thể: 8 icon riêng + lặp lại 4 icon đầu để burst dày và dễ thấy hơn.
+      const symbols = [...baseSymbols, ...baseSymbols.slice(0, 4)];
       const count = symbols.length;
+
       symbols.forEach((symbol, i) => {
-        // Bố trí thành vòng cung quanh avatar, ưu tiên phần trên để không che label.
-        const angle = (-160 + (320 / Math.max(1, count - 1)) * i) * Math.PI / 180;
-        const radius = 82 + (i % 3) * 22;
-        const dx = Math.cos(angle) * radius;
-        const dy = Math.sin(angle) * radius - 28;
-        const drift = (i % 2 ? 1 : -1) * (8 + (i % 3) * 5);
-        addDestinationFxItem(origin, "fx-object-pop", symbol, {
-          dx:`${dx.toFixed(0)}px`,
-          dy:`${dy.toFixed(0)}px`,
-          mx:`${(dx*.42).toFixed(0)}px`,
-          my:`${(dy*.42).toFixed(0)}px`,
-          dx2:`${(dx + drift).toFixed(0)}px`,
-          dy2:`${(dy - 6 - (i%2)*7).toFixed(0)}px`,
-          jump:`${22 + (i%4)*6}px`,
-          jump2:`${12 + (i%3)*4}px`,
-          r0:`${-22 + i*5}deg`,
-          r1:`${10 - i*2}deg`,
-          r2:`${-7 + i}deg`,
-          r3:`${8 - i}deg`,
-          r4:`${-4 + i*.6}deg`,
-          r5:`${5 - i*.5}deg`,
-          r6:`${(i%2 ? 1 : -1) * (18 + i*3)}deg`,
-          dur:`${2.15 + (i%3)*.22}s`,
-          delay:`${.05 + i*.075}s`,
-          size:`${24 + (i%4)*3}px`
-        });
+        const el = document.createElement("span");
+        el.className = "destination-fx-item fx-object-pop";
+        el.textContent = symbol;
+        const size = 32 + (i % 4) * 4;
+        el.style.fontSize = `${size}px`;
+        origin.appendChild(el);
+
+        // Chia đều quanh avatar nhưng đẩy phần dưới sang hai bên để không che pin/label.
+        const angle = (-165 + (330 / Math.max(1, count - 1)) * i) * Math.PI / 180;
+        const radius = 92 + (i % 3) * 28;
+        let dx = Math.cos(angle) * radius;
+        let dy = Math.sin(angle) * radius - 34;
+        if(dy > 28) dy = 20 + (i % 2) * 14;
+        const side = i % 2 ? 1 : -1;
+        const endX = dx + side * (12 + (i % 3) * 7);
+        const endY = dy - 8 - (i % 2) * 8;
+        const rot1 = side * (12 + i * 2);
+        const rot2 = -side * (22 + i * 3);
+        const delay = 50 + i * 72;
+        const duration = 2550 + (i % 3) * 230;
+
+        // Dùng Web Animations API với số cụ thể thay vì chỉ CSS custom properties.
+        // Cách này ổn định hơn trên Safari/iPhone và Chromium GitHub Pages.
+        const keyframes = [
+          { opacity:0, transform:`translate(-50%,-50%) translate(0px,10px) scale(.12) rotate(0deg)`, offset:0 },
+          { opacity:1, transform:`translate(-50%,-50%) translate(${(dx*.28).toFixed(0)}px,${(dy*.28-20).toFixed(0)}px) scale(1.25) rotate(${rot1}deg)`, offset:.18 },
+          { opacity:1, transform:`translate(-50%,-50%) translate(${(dx*.72).toFixed(0)}px,${(dy*.72-36).toFixed(0)}px) scale(1.02) rotate(${(-rot1*.45).toFixed(0)}deg)`, offset:.42 },
+          { opacity:1, transform:`translate(-50%,-50%) translate(${dx.toFixed(0)}px,${(dy-48).toFixed(0)}px) scale(1.12) rotate(${rot2}deg)`, offset:.58 },
+          { opacity:1, transform:`translate(-50%,-50%) translate(${dx.toFixed(0)}px,${dy.toFixed(0)}px) scale(.98) rotate(${(rot1*.35).toFixed(0)}deg)`, offset:.72 },
+          { opacity:.96, transform:`translate(-50%,-50%) translate(${endX.toFixed(0)}px,${(endY-20).toFixed(0)}px) scale(1.05) rotate(${(-rot2*.35).toFixed(0)}deg)`, offset:.84 },
+          { opacity:0, transform:`translate(-50%,-50%) translate(${endX.toFixed(0)}px,${endY.toFixed(0)}px) scale(.58) rotate(${(rot2*1.35).toFixed(0)}deg)`, offset:1 }
+        ];
+
+        if(typeof el.animate === "function"){
+          const anim = el.animate(keyframes, {
+            duration,
+            delay,
+            easing:"cubic-bezier(.18,.72,.22,1)",
+            fill:"forwards"
+          });
+          anim.onfinish = () => el.remove();
+        }else{
+          // Fallback cho browser rất cũ.
+          el.style.setProperty("--dx", `${dx.toFixed(0)}px`);
+          el.style.setProperty("--dy", `${dy.toFixed(0)}px`);
+          el.style.setProperty("--dx2", `${endX.toFixed(0)}px`);
+          el.style.setProperty("--dy2", `${endY.toFixed(0)}px`);
+          el.style.setProperty("--dur", `${duration}ms`);
+          el.style.setProperty("--delay", `${delay}ms`);
+          el.style.animation = `objectPopAround ${duration}ms cubic-bezier(.18,.72,.22,1) ${delay}ms forwards`;
+        }
       });
 
-      // Thêm 4 sparkle nhỏ để cú đáp có cảm giác "pop" rõ hơn.
-      for(let i=0;i<4;i++){
-        const angle = Math.PI*2*(i/4) + Math.PI/4;
-        const radius = 55 + i*8;
-        addDestinationFxItem(origin,"fx-star-pop", i%2 ? "✨" : "✦", {
+      // Sparkle phụ bao quanh cú đáp.
+      for(let i=0;i<8;i++){
+        const angle = Math.PI*2*(i/8) + Math.PI/8;
+        const radius = 62 + (i%3)*15;
+        addDestinationFxItem(origin,"fx-star-pop", i%3===0 ? "💫" : "✨", {
           dx:`${(Math.cos(angle)*radius).toFixed(0)}px`,
-          dy:`${(Math.sin(angle)*radius-24).toFixed(0)}px`,
+          dy:`${(Math.sin(angle)*radius-28).toFixed(0)}px`,
           mx:`${(Math.cos(angle)*radius*.45).toFixed(0)}px`,
-          my:`${((Math.sin(angle)*radius-24)*.45).toFixed(0)}px`,
-          delay:`${i*.06}s`, dur:"1.35s", size:`${17+i*2}px`
+          my:`${((Math.sin(angle)*radius-28)*.45).toFixed(0)}px`,
+          delay:`${i*.055}s`, dur:"1.55s", size:`${18+(i%3)*3}px`
         });
       }
-      cleanupDestinationOrigin(origin,3600);
+
+      cleanupDestinationOrigin(origin,4400);
     }
     function playDestinationAnimation(index){
       if(index < 0 || index >= stops.length || !destinationFxLayer) return;
