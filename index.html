@@ -687,6 +687,161 @@
       to{transform:translateY(-12px) scale(1.2) rotate(10deg);opacity:1}
     }
 
+
+
+    /* ==========================================================
+       DESTINATION ARRIVAL ANIMATIONS
+       Mỗi checkpoint có một hiệu ứng riêng khi avatar đáp xuống.
+       ========================================================== */
+    .destination-fx-layer{
+      position:absolute;
+      inset:0;
+      z-index:11;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .destination-fx-origin{
+      position:absolute;
+      left:var(--fx-x);
+      top:var(--fx-y);
+      width:0;
+      height:0;
+      pointer-events:none;
+    }
+
+    .destination-fx-item{
+      position:absolute;
+      left:0;
+      top:0;
+      display:block;
+      line-height:1;
+      user-select:none;
+      pointer-events:none;
+      will-change:transform,opacity,filter;
+      filter:drop-shadow(0 5px 8px rgba(60,45,52,.14));
+    }
+
+    .fx-lantern{
+      font-size:var(--size,28px);
+      animation:lanternRise var(--dur,2.7s) cubic-bezier(.18,.72,.22,1) var(--delay,0s) forwards;
+    }
+    @keyframes lanternRise{
+      0%{opacity:0;transform:translate(var(--sx,0px),16px) scale(.55) rotate(-7deg)}
+      16%{opacity:1}
+      72%{opacity:1}
+      100%{opacity:0;transform:translate(var(--dx,0px),var(--dy,-170px)) scale(1.08) rotate(var(--rot,8deg))}
+    }
+
+    .fx-paris-heart{
+      font-size:var(--size,24px);
+      animation:parisHeartFly var(--dur,2.25s) cubic-bezier(.16,.75,.25,1) var(--delay,0s) forwards;
+    }
+    @keyframes parisHeartFly{
+      0%{opacity:0;transform:translate(var(--sx,0px),8px) scale(.45) rotate(-16deg)}
+      18%{opacity:1}
+      58%{opacity:1;transform:translate(var(--mx,0px),var(--my,-62px)) scale(1.18) rotate(10deg)}
+      100%{opacity:0;transform:translate(var(--dx,0px),var(--dy,-115px)) scale(.82) rotate(var(--rot,18deg))}
+    }
+
+    .fx-maple{
+      font-size:var(--size,25px);
+      transform-origin:center;
+      animation:mapleFall var(--dur,3s) ease-in var(--delay,0s) forwards;
+    }
+    @keyframes mapleFall{
+      0%{opacity:0;transform:translate(var(--sx,0px),var(--sy,-135px)) rotate(0deg) scale(.72)}
+      12%{opacity:1}
+      82%{opacity:1}
+      100%{opacity:0;transform:translate(var(--dx,35px),var(--dy,120px)) rotate(var(--spin,440deg)) scale(1.08)}
+    }
+
+    .fx-snow{
+      color:white;
+      font-size:var(--size,22px);
+      text-shadow:0 2px 10px rgba(80,135,180,.38);
+      animation:snowFall var(--dur,2.9s) linear var(--delay,0s) forwards;
+    }
+    @keyframes snowFall{
+      0%{opacity:0;transform:translate(var(--sx,0px),var(--sy,-120px)) rotate(0deg) scale(.65)}
+      15%{opacity:.95}
+      80%{opacity:.92}
+      100%{opacity:0;transform:translate(var(--dx,25px),var(--dy,115px)) rotate(var(--spin,300deg)) scale(1.06)}
+    }
+
+    .aurora-ribbon{
+      position:absolute;
+      left:0;
+      top:0;
+      width:min(260px,34vw);
+      height:94px;
+      transform:translate(-50%,-108%) rotate(-7deg) scale(.7);
+      border-radius:50%;
+      background:
+        radial-gradient(ellipse at center, rgba(169,255,220,.76) 0 18%, rgba(119,218,217,.43) 40%, rgba(185,165,241,.28) 60%, transparent 73%);
+      filter:blur(7px) saturate(1.2);
+      opacity:0;
+      mix-blend-mode:screen;
+      animation:auroraBloom 2.8s ease-in-out forwards;
+    }
+    .aurora-ribbon::after{
+      content:"";
+      position:absolute;
+      inset:18px -18px;
+      border-radius:50%;
+      background:radial-gradient(ellipse at center, rgba(189,255,223,.45), rgba(151,180,255,.22) 45%, transparent 72%);
+      transform:rotate(10deg);
+    }
+    @keyframes auroraBloom{
+      0%{opacity:0;transform:translate(-50%,-104%) rotate(-10deg) scale(.55)}
+      24%{opacity:.92}
+      52%{opacity:.74;transform:translate(-50%,-118%) rotate(5deg) scale(1.08)}
+      82%{opacity:.68}
+      100%{opacity:0;transform:translate(-50%,-126%) rotate(-3deg) scale(1.2)}
+    }
+
+    .fx-sakura{
+      font-size:var(--size,24px);
+      animation:sakuraDrift var(--dur,3s) cubic-bezier(.2,.55,.38,1) var(--delay,0s) forwards;
+    }
+    @keyframes sakuraDrift{
+      0%{opacity:0;transform:translate(var(--sx,0px),var(--sy,-115px)) rotate(0deg) scale(.6)}
+      14%{opacity:1}
+      78%{opacity:1}
+      100%{opacity:0;transform:translate(var(--dx,45px),var(--dy,118px)) rotate(var(--spin,540deg)) scale(1.08)}
+    }
+
+    .fx-kangaroo{
+      font-size:var(--size,35px);
+      animation:kangarooHop var(--dur,2.4s) cubic-bezier(.24,.65,.32,1) var(--delay,0s) forwards;
+      transform-origin:50% 100%;
+    }
+    @keyframes kangarooHop{
+      0%{opacity:0;transform:translate(var(--sx,-90px),12px) scale(.5)}
+      12%{opacity:1}
+      25%{transform:translate(var(--k1x,-54px),-45px) scale(.9) rotate(-8deg)}
+      42%{transform:translate(var(--k2x,-22px),3px) scale(1)}
+      58%{transform:translate(var(--k3x,16px),-38px) scale(1.05) rotate(7deg)}
+      76%{opacity:1;transform:translate(var(--k4x,44px),3px) scale(1)}
+      100%{opacity:0;transform:translate(var(--dx,80px),-28px) scale(.82) rotate(8deg)}
+    }
+
+    .fx-star-pop{
+      font-size:var(--size,20px);
+      animation:starPop var(--dur,1.65s) ease-out var(--delay,0s) forwards;
+    }
+    @keyframes starPop{
+      0%{opacity:0;transform:translate(0,0) scale(.15) rotate(0deg)}
+      28%{opacity:1;transform:translate(var(--mx,0px),var(--my,-25px)) scale(1.35) rotate(80deg)}
+      72%{opacity:1}
+      100%{opacity:0;transform:translate(var(--dx,0px),var(--dy,-65px)) scale(.4) rotate(180deg)}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .destination-fx-layer{display:none}
+    }
+
+
     #fxCanvas{
       position:fixed;
       inset:0;
@@ -743,7 +898,7 @@
     <section class="board" id="board" aria-label="Bản đồ hành trình vòng quanh thế giới">
       <div class="legend">
         <strong>💌 Mission of the journey</strong>
-        <p>Tất cả checkpoint đều màu xám. Chỉ điểm avatar đang đứng mới sáng lên; Complete rồi đóng popup để bay sang điểm kế tiếp.</p>
+        <p>Complete rồi đóng popup để bay sang điểm kế tiếp.</p>
       </div>
 
       <!-- Vector world map: Natural Earth public-domain data, không có text thừa, nét ở mọi độ phân giải -->
@@ -946,6 +1101,8 @@
         <path id="routeDone" d="" />
       </svg>
 
+      <div class="destination-fx-layer" id="destinationFxLayer" aria-hidden="true"></div>
+
       <div class="traveler" id="traveler" style="--tx:78.14%;--ty:45.89%" aria-hidden="true">
         <div class="traveler-ring">
           <div class="traveler-faces" id="travelerFaces"></div>
@@ -1045,6 +1202,8 @@
 
     const board = document.getElementById("board");
     const traveler = document.getElementById("traveler");
+    const destinationFxLayer = document.getElementById("destinationFxLayer");
+
     const travelerFaces = document.getElementById("travelerFaces");
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalTitle = document.getElementById("modalTitle");
@@ -1332,6 +1491,151 @@
       routeDone.style.strokeDashoffset = `${Math.max(0, routeTotalLength - shown)}`;
     }
 
+
+    // ==========================================================
+    // DESTINATION-SPECIFIC ARRIVAL EFFECTS
+    // ==========================================================
+    function destinationFxOrigin(index){
+      const p = boardPoint(stops[index]);
+      const origin = document.createElement("div");
+      origin.className = "destination-fx-origin";
+      origin.style.setProperty("--fx-x", p.x + "%");
+      origin.style.setProperty("--fx-y", p.y + "%");
+      destinationFxLayer.appendChild(origin);
+      return origin;
+    }
+
+    function addDestinationFxItem(origin, className, emoji, vars = {}){
+      const el = document.createElement("span");
+      el.className = `destination-fx-item ${className}`;
+      el.textContent = emoji;
+      Object.entries(vars).forEach(([key, value]) => el.style.setProperty(`--${key}`, value));
+      origin.appendChild(el);
+      return el;
+    }
+
+    function cleanupDestinationOrigin(origin, ms = 4200){
+      setTimeout(() => origin.remove(), ms);
+    }
+
+    function playHanoiAnimation(index){
+      const origin = destinationFxOrigin(index);
+      const items = [
+        [-82,-165,-10,"2.9s","0s","30px"],
+        [-42,-205, 8,"2.6s",".18s","24px"],
+        [  8,-185,-7,"2.85s",".34s","28px"],
+        [ 52,-220,12,"2.65s",".52s","23px"],
+        [ 88,-172,-9,"2.75s",".68s","27px"]
+      ];
+      items.forEach(([dx,dy,rot,dur,delay,size],i) => {
+        addDestinationFxItem(origin,"fx-lantern",i % 2 ? "✨" : "🏮",{
+          sx:`${(i-2)*12}px`, dx:`${dx}px`, dy:`${dy}px`, rot:`${rot}deg`, dur, delay, size
+        });
+      });
+      cleanupDestinationOrigin(origin,3900);
+    }
+
+    function playParisAnimation(index){
+      const origin = destinationFxOrigin(index);
+      const symbols = ["💗","✨","💖","✨","💕","🗼","✨","💗","✨"];
+      symbols.forEach((symbol,i) => {
+        const angle = -Math.PI * .95 + (Math.PI * .9) * (i / Math.max(1, symbols.length - 1));
+        const radius = 80 + (i % 3) * 24;
+        const dx = Math.cos(angle) * radius;
+        const dy = -70 - Math.abs(Math.sin(angle)) * 92 - (i % 2) * 15;
+        addDestinationFxItem(origin,"fx-paris-heart",symbol,{
+          sx:`${(i-4)*5}px`, dx:`${dx.toFixed(0)}px`, dy:`${dy.toFixed(0)}px`,
+          rot:`${-20+i*7}deg`, mx:`${(dx*.55).toFixed(0)}px`, my:`${(dy*.55).toFixed(0)}px`, dur:`${2.05+(i%3)*.22}s`, delay:`${i*.09}s`, size:symbol==="🗼"?"32px":"22px"
+        });
+      });
+      cleanupDestinationOrigin(origin,3800);
+    }
+
+    function playCanadaAnimation(index){
+      const origin = destinationFxOrigin(index);
+      for(let i=0;i<13;i++){
+        const sx = -110 + Math.random()*220;
+        const dx = sx + (-45 + Math.random()*90);
+        addDestinationFxItem(origin,"fx-maple",i%4===0?"🍂":"🍁",{
+          sx:`${sx.toFixed(0)}px`, sy:`${(-105-Math.random()*55).toFixed(0)}px`,
+          dx:`${dx.toFixed(0)}px`, dy:`${(105+Math.random()*65).toFixed(0)}px`,
+          spin:`${300+Math.random()*420}deg`, dur:`${2.5+Math.random()*.95}s`,
+          delay:`${Math.random()*.75}s`, size:`${20+Math.random()*14}px`
+        });
+      }
+      cleanupDestinationOrigin(origin,4500);
+    }
+
+    function playFinlandAnimation(index){
+      const origin = destinationFxOrigin(index);
+      const aurora = document.createElement("div");
+      aurora.className = "aurora-ribbon";
+      origin.appendChild(aurora);
+      for(let i=0;i<18;i++){
+        const sx = -125 + Math.random()*250;
+        addDestinationFxItem(origin,"fx-snow",i%3===0?"✦":"❄",{
+          sx:`${sx.toFixed(0)}px`, sy:`${(-120-Math.random()*60).toFixed(0)}px`,
+          dx:`${(sx-25+Math.random()*50).toFixed(0)}px`, dy:`${(100+Math.random()*75).toFixed(0)}px`,
+          spin:`${180+Math.random()*360}deg`, dur:`${2.25+Math.random()*1.25}s`,
+          delay:`${Math.random()*.8}s`, size:`${14+Math.random()*13}px`
+        });
+      }
+      cleanupDestinationOrigin(origin,4700);
+    }
+
+    function playTokyoAnimation(index){
+      const origin = destinationFxOrigin(index);
+      for(let i=0;i<16;i++){
+        const sx = -120 + Math.random()*240;
+        const petal = i%5===0 ? "🌸" : (i%2===0 ? "✿" : "🌸");
+        addDestinationFxItem(origin,"fx-sakura",petal,{
+          sx:`${sx.toFixed(0)}px`, sy:`${(-115-Math.random()*65).toFixed(0)}px`,
+          dx:`${(sx-55+Math.random()*110).toFixed(0)}px`, dy:`${(100+Math.random()*85).toFixed(0)}px`,
+          spin:`${360+Math.random()*520}deg`, dur:`${2.4+Math.random()*1.15}s`,
+          delay:`${Math.random()*.8}s`, size:`${17+Math.random()*13}px`
+        });
+      }
+      cleanupDestinationOrigin(origin,4700);
+    }
+
+    function playAustraliaAnimation(index){
+      const origin = destinationFxOrigin(index);
+      const kangaroos = [
+        {sx:-110,dx:92,delay:"0s",size:"37px"},
+        {sx:90,dx:-82,delay:".35s",size:"31px"},
+        {sx:-65,dx:70,delay:".7s",size:"27px"}
+      ];
+      kangaroos.forEach(k => addDestinationFxItem(origin,"fx-kangaroo","🦘",{
+        sx:`${k.sx}px`, dx:`${k.dx}px`, k1x:`${(k.sx*.6).toFixed(0)}px`, k2x:`${(k.sx*.25).toFixed(0)}px`, k3x:`${(k.dx*.2).toFixed(0)}px`, k4x:`${(k.dx*.55).toFixed(0)}px`, delay:k.delay, size:k.size, dur:"2.4s"
+      }));
+      for(let i=0;i<12;i++){
+        const angle = Math.PI*2*(i/12);
+        const radius = 68 + (i%3)*25;
+        addDestinationFxItem(origin,"fx-star-pop",i%4===0?"💛":"✨",{
+          dx:`${(Math.cos(angle)*radius).toFixed(0)}px`,
+          dy:`${(Math.sin(angle)*radius-32).toFixed(0)}px`,
+          mx:`${(Math.cos(angle)*radius*.38).toFixed(0)}px`, my:`${((Math.sin(angle)*radius-32)*.38).toFixed(0)}px`,
+          delay:`${(i%6)*.08}s`, dur:`${1.45+(i%3)*.18}s`, size:`${17+(i%3)*3}px`
+        });
+      }
+      cleanupDestinationOrigin(origin,3900);
+    }
+
+    function playDestinationAnimation(index){
+      if(index < 0 || index >= stops.length || !destinationFxLayer) return;
+      switch(index){
+        case 0: playHanoiAnimation(index); break;
+        case 1:
+          playParisAnimation(index);       // hiệu ứng riêng mới
+          launchParisFireworks();          // giữ pháo hoa cũ + cộng thêm
+          break;
+        case 2: playCanadaAnimation(index); break;
+        case 3: playFinlandAnimation(index); break;
+        case 4: playTokyoAnimation(index); break;
+        case 5: playAustraliaAnimation(index); break; // final popup/fireworks vẫn chạy khi Complete
+      }
+    }
+
     function animateTravelerTo(destinationIndex){
       if(traveling || destinationIndex <= travelerIndex || destinationIndex >= stops.length) return;
 
@@ -1385,10 +1689,8 @@
             );
           }
 
-          // Đến checkpoint thứ 2 (Paris) thì bắn pháo hoa rõ ràng trong ~2 giây.
-          if(destinationIndex === 1){
-            launchParisFireworks();
-          }
+          // Avatar vừa đáp xuống: chạy animation riêng của destination.
+          playDestinationAnimation(destinationIndex);
         }
       }
 
@@ -1538,6 +1840,8 @@
 
     setupTraveler();
     createStops();
+    // Khi mở trang/reload, checkpoint avatar đang đứng cũng có animation chào mừng.
+    setTimeout(() => playDestinationAnimation(travelerIndex), 650);
   </script>
 </body>
 </html>
